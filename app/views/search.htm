@@ -1,0 +1,98 @@
+<div class="row contentHeader">
+	<div class="col-xs-12">
+		<i class="fa fa-search cntHeaderIcon"></i>Advanced Search
+	</div>
+	<!-- /.col-lg-6 -->
+</div>
+<div class="col-xs-4 noteBox">
+	<h1>Search Criterias</h1>
+	<form action="" class="form-horizontal">
+		<div class="form-group">
+			<label for="inputEmail3" class="col-sm-4 control-label">Client Organization</label>
+			<div class="col-sm-8">
+				<input type="text" class="form-control" name="nameFind" ng-model="nameFind">
+			</div>
+		</div>	
+		<div class="form-group">
+			<label for="inputEmail3" class="col-sm-4 control-label">Last Updated</label>
+			<div class="col-sm-4">
+				<input type="datetime" datepicker class="form-control datepicker" name="fromDate" placeholder="From"  ng-model="fromDate"> 
+			</div>
+			<div class="col-sm-4">
+				<input type="datetime" datepicker class="form-control datepicker" name="toDate" placeholder="To"  ng-model="toDate"> 
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputEmail3" class="col-sm-4 control-label">Summary</label>
+			<div class="col-sm-8">
+				<input type="text" class="form-control" name="aiComments" ng-model="aiComments">
+			</div>
+		</div>
+		<div class="form-group">
+			<label for="inputEmail3" class="col-sm-4 control-label">Notes</label>
+			<div class="col-sm-8">
+				<input type="text" class="form-control" name="aiNotes" ng-model="aiNotes">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-4 col-sm-8">
+				<button type="submit" class="btn btn-default" ng-click="searchAllAi(nameFind,fromDate,toDate,aiComments,aiNotes)">Search</button> 
+				<button type="reset" class="btn btn-default">Reset</button> 
+			</div>
+		</div>
+	</form>
+	<div id="searchFilters" ng-show="aiResults.length > 0">
+		<h1>Search Filters</h1>
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label for="status" class="col-sm-4 control-label">Status</label>
+				<div class="col-sm-8">
+					<select class="form-control" ng-change="setStatusFilter(actiontype)" ng-model="actiontype">
+						<option value="">ALL</option>
+						<option ng-repeat="ai in aiResults | unique:'ACTIONTYPE' | orderBy:'ACTIONTYPE'" ng-click="" value="{{ai.ACTIONTYPE}}">
+							{{ai.ACTIONTYPE}}</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="status" class="col-sm-4 control-label">Assigned To</label>
+				<div class="col-sm-8">
+					<select class="form-control" ng-change="setUserFilter(assignee)" ng-model="assignee">
+						<option value="">ALL</option>
+						<option ng-repeat="ai in aiResults | unique:'ACTIONASSIGNEDTOCD' | orderBy:'ACTIONASSIGNEDTOCD'" ng-click="" value="{{ai.ACTIONASSIGNEDTOCD}}">
+							{{ai.ACTIONASSIGNEDTOCD}}</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+			<div class="col-sm-offset-4 col-sm-8">
+				<button type="reset" class="btn btn-default" ng-click="clearFilter()">Clear Filters</button> 
+			</div>
+		</div>
+		</form>
+	</div>
+</div> 
+<div class="col-xs-7 noteBox">
+	<h1>Search Results</h1>
+	<div id="details">
+		<div class="list-group">
+
+			<a ng-href="#/ai/{{ai.LISTITEMNUM}}" target="_blank" class="list-group-item row aiItemRow" ng-repeat="ai in aiResults | filter: filterbyStatus | filter: filterbyUser">
+				<div class="aiStatusDiv col-xs-1">
+					<span class="badge priority{{ai.ACTIONPRIORITY}}">{{ai.ACTIONPRIORITY}}</span>
+				</div>
+				<div class="aiNumberDiv col-xs-7"><strong>{{ai.NAMEFIND}} - #{{ai.LISTITEMNUM}}</strong></div>
+				<div class="aiStatusDiv col-xs-4">
+					<span class="label actionTypeSpan action{{ai.actionTypeClass}}">{{ai.ACTIONTYPE}}</span>
+					<span class="label label-default actionTypeSpan">{{ai.ACTIONASSIGNEDTOCD}}</span>
+				</div>
+				<br>
+				<div class="bs-callout bs-callout-info">
+					{{ai.ACTIONCOMMENTS}}
+				</div>
+			</a>
+
+
+		</div>
+	</div>
+</div>    

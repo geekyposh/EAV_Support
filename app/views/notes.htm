@@ -1,0 +1,70 @@
+<div class="row contentHeader">
+	<div class="col-xs-12">
+		<i class="fa fa-pencil-square-o cntHeaderIcon"></i>Notes
+	</div>
+	<!-- /.col-lg-6 -->
+</div>
+<div class="col-xs-6 noteBox">
+	<div class="row">
+		<div class="col-xs-8">
+			<div class="input-group">
+				<span class="input-group-addon"><i class="fa fa-search"></i></span>
+				<input type="search" class="form-control" placeholder="Search" ng-model="todoSearch">
+			</div>
+		</div>
+		<div class="col-xs-4 text-right">
+			<button type="button" class="btn btn-default" id="exportNotesBtn"><i class="fa fa-download"></i> export notes</button>
+		</div>
+	</div>
+	
+	<br>
+	<div id="details">
+		<ul class="list-group">
+			<li  ng-repeat="todo in todos | filter:todoSearch" class="list-group-item clearfix">
+				<h4 class="list-group-item-heading">{{todo.taskDate}}</h4>
+				<div class="pull-right">
+					<button type="button" class="btn btn-default btn-sm" ng-click="archiveTodo($index)"><i class="fa fa-check"></i></button> 
+					<button type="button" class="btn btn-default btn-sm" ng-click="deleteTodo($index)"><i class="fa fa-remove"></i></button> 
+					<button type="button" class="btn btn-default btn-sm" ng-click="editTodo($index)"><i class="fa fa-pencil"></i></button>
+				</div>
+				<div ng-bind-html="SkipValidation(todo.taskName)"></div>
+				<div class="bs-callout bs-callout-info" ng-show="todo.relatedAIs.length >0">
+					Related Action Item(s):
+					<span ng-repeat="ais in todo.relatedAIs"><a href="#/ai/{{ais}}">{{ais}}</a> </span>
+				</div>
+
+			</li>
+		</ul>
+	</div>
+</div> 
+<div class="col-xs-5 noteBox">
+	<h1>Add New Note</h1>
+	<textarea ng-model="newTodo" id="todoEditor" class="form-control" rows="12"></textarea>
+
+	<br>
+	<div ng-controller="AiController">
+		<div ng-show="aiService.aiSelected.length > 0">
+			<strong>Related Action Item(s):</strong> 
+			<span ng-repeat="ais in aiService.aiSelected">
+				<button class="btn btn-sm btn-primary" type="button" ng-click="aiSelectRemove($index)">{{ais}} <i class="fa fa-remove"></i></button> 
+			</span>
+			<br><br>
+		</div>
+		<div class="input-group">
+			<span class="input-group-addon"><i class="fa fa-search"></i></span>
+			<input type="search" class="form-control" placeholder="Select related action items" ng-model="aiSearch">
+		</div>
+		<ul class="aiSearchList">
+			<li ng-repeat="ai in aiList | orderBy:ai.LISTITEMNUM | filter:aiSearch" ng-show="aiSearch.length > 1">
+				<button type="button" ng-click="aiSelect(ai.LISTITEMNUM)" class="btn btn-xs btn-primary"><i class="fa fa-check"></i></button> 
+				<a ng-href="#/ai/{{ai.LISTITEMNUM}}" target="_blank">{{ai.NAMEFIND}} - #{{ai.LISTITEMNUM}}</a> 
+				<span class="label actionTypeSpan pull-right action{{ai.actionTypeClass}}">{{ai.ACTIONTYPE}}</span>
+			</li>
+			<li ng-show="(aiList|filter:aiSearch).length < 1 && aiSearch.length == 5">
+				<button type="button" ng-click="aiSelect()" class="btn btn-primary"><i class="fa fa-check"></i> Add Action Item #{{aiSearch}}</button> 
+			</li>
+		</ul> 
+	</div>
+	<p class="text-right"><button class="btn btn-default" ng-click="addTodo()">Add</button></p>
+	
+</div>    

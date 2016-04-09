@@ -1,0 +1,199 @@
+<div class="row contentHeader">
+    <div class="col-xs-6">
+        <i class="fa fa-tasks cntHeaderIcon"></i>Action Items - {{progress}}% Complete
+    </div>
+    <div class="col-xs-offset-4 col-xs-2">
+        <form ng-submit="searchUserAi(searchAiNumber)">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search Action Items" ng-model="searchAiNumber" x-webkit-speech>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="searchUserAi(searchAiNumber)">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+            <!-- /input-group -->
+        </form>
+    </div>
+    <!-- /.col-lg-6 -->
+</div>
+
+<div class="col-xs-2 filterBox">
+    <div class="clientListBox">
+        <h1>Client List</h1>
+        <div class="list-group">
+            <ul class="nav nav-pills nav-stacked">
+                <li ng-class="{active: filterAisBy == ''}" ng-click="setAiFilter()">
+                    <a>ALL</a>
+                </li>
+                <li ng-class="{active: filterAisBy == 'Saved'}" ng-click="setAiFilter('Saved')">
+                    <a>SAVED</a>
+                </li>
+                <li ng-repeat="ai in aiList | unique:'NAMEFIND' | orderBy:'NAMEFIND'" ng-click="setAiFilter(ai.NAMEFIND)" ng-class="{active: ai.NAMEFIND == filterAisBy}">
+                    <a>{{ai.NAMEFIND}}</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <br>
+    
+    <div class="clientListBox">
+        <h1>Status</h1>
+        <div class="list-group">
+            <ul class="nav nav-pills nav-stacked">
+                <li ng-repeat="ai in aiList | unique:'ACTIONTYPE' | orderBy:'ACTIONTYPE'" ng-click="setAiFilter(ai.ACTIONTYPE)" ng-class="{active: ai.ACTIONTYPE == filterAisBy}">
+                    <a>{{ai.ACTIONTYPE}}</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <br>
+    <div class="clientListBox">
+        <h1>Sort</h1>
+        <div class="list-group">
+            <ul class="nav nav-pills nav-stacked">
+
+                <li ng-click="setAiSort('LISTITEMNUM DESC')"  ng-class="{active: sortAisBy == 'LISTITEMNUM DESC'}">
+                    <a>By AI Number</a>
+                </li>
+                <li ng-click="setAiSort('UPDATETMS DESC')" ng-class="{active: sortAisBy == 'UPDATETMS DESC'}">
+                    <a>By Date</a>
+                </li>
+                <li ng-click="setAiSort('ACTIONPRIORITY')"  ng-class="{active: sortAisBy == 'ACTIONPRIORITY'}">
+                    <a>By Priority</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-3 contentBox aiListBox">
+    <h1>Action Items</h1>
+    <div class="list-group">
+
+        <a ng-href="#/ai/{{ai.LISTITEMNUM}}" class="list-group-item row aiItemRow {{ai.lateClass}}" ng-repeat="ai in aiList | filter:filterAisBy">
+            <div class="aiStatusDiv col-xs-1">
+                <span class="badge priority{{ai.ACTIONPRIORITY}}">{{ai.ACTIONPRIORITY}}</span>
+            </div>
+            <div class="aiNumberDiv col-xs-6">{{ai.NAMEFIND}} - #{{ai.LISTITEMNUM}}</div>
+            <div class="aiStatusDiv col-xs-4">
+                <span class="label actionTypeSpan action{{ai.actionTypeClass}}">{{ai.ACTIONTYPE}}</span>
+            </div>
+
+        </a>
+
+
+    </div>
+
+    <br>
+</div>
+
+<div class="col-xs-6 contentBox aiDetailBox">
+    <h1>Details</h1>
+    <button class="btn btn-default" style="margin-bottom:5px;" type="button" ng-click="openOnSupport(ai.LISTITEMNUM)">
+        <i class="fa fa-globe"></i> {{ai.NAMEFIND}} {{ai.LISTITEMNUM}}
+    </button>
+    <div class="pull-right" style="margin-bottom:5px;">
+        <button class="btn btn-default " data-toggle="modal" data-target="#aiResponseModal">
+            <i class="fa fa-reply"></i>
+        </button>
+        <button class="btn btn-default " data-toggle="modal" data-target="#aiDocumentModal" ng-show="docList.length > 0">
+            <i class="fa fa-file-o"></i>
+        </button>
+        <button class="btn btn-default" type="button" ng-click="addNote(ai.LISTITEMNUM);">
+            <i class="fa fa-pencil"></i>
+        </button> 
+        <button class="btn btn-default" type="button" ng-click="aiService.toggleBookmark(ai);">
+            <i class=" fa fa-bookmark-o" ng-hide="ai.bookmarked"></i>
+            <i class="fa fa-bookmark" ng-hide="ai.bookmarked !== true"></i>
+        </button>
+    </div>
+
+    <div id="details">
+        <div class="bs-callout bs-callout-info">{{ai.ACTIONCOMMENTS}}</div>
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="aiDocumentModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Documents for {{ai.NAMEFIND}} - #{{ai.LISTITEMNUM}}</h4>
+            </div>
+            <div class="modal-body" id="aiDocumentModalBody">
+                <table class="table table-hover">
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Uploaded By</th>
+                    </tr>
+                    <tr ng-repeat="doc in docList">
+                        <td>
+                            <a href="https://www.euclidtechnology.com/cvweb/ai_documents/2009/{{doc.FILENAME}}" target="_blank">{{doc.TITLETXT}}</a>
+                            <div>{{doc.DOCDES}}</div>
+                        </td>
+                        <td>{{doc.DOCDATE}}</td>
+                        <td>{{doc.OWNERNAME}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="aiResponseModal" ng-controller="AiMessageController">
+    <form ng-submit="sendAiMessage()" role="form">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Reply to {{ai.NAMEFIND}} #{{ai.LISTITEMNUM}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Action</label>
+                        <select size="1" name="ACTIONTYPE" ng-model="ACTIONTYPE" ng-init="ACTIONTYPE='Client Review'" class="form-control">
+                            <option value="Client Review">Client Review</option>
+                            <option value="Enhancement">Enhancement</option>
+                            <option value="Inprogress">Inprogress</option>
+                            <option value="Investigate">Investigate</option>
+                            <option value="Ready to Close">Ready to Close</option>
+                            <option value="Quoted">Quoted</option>
+                            <option value="Upgrade">Upgrade</option>
+                        </select> 
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Status</label>
+                        <select name="ACTIONSTT" ng-model="ACTIONSTT" ng-init="ACTIONSTT='Out-Standing'" class="form-control">
+                            <option value="Out-Standing">Out-Standing</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Reply</label>
+                        <textarea class="form-control" id="aiMessageEditor" rows="3" ng-model="aiMessage" placeholder="Enter Response Message"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Email CC</label>
+                        <textarea type="email" class="form-control" id="exampleInputEmail1">{{ai.EMAILCC}}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
